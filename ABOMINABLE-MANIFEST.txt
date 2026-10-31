@@ -1,0 +1,21 @@
+Abominable.ps1
+ABOMINABLE-MANIFEST.txt
+CHANGELOG.md
+LICENSE
+LICENSE-dxwrapper.txt
+Play - Bordered.cmd
+Play - Borderless 4x3.cmd
+1 - Set up registry.cmd
+Restore registry.cmd
+Validate package.cmd
+Validate-Package.ps1
+README.md
+ddraw.dll
+dxwrapper.dll
+dxwrapper.ini
+Profiles\Bordered.ini
+Profiles\Borderless-4x3.ini
+
+Runtime files that may also be removed after closing the game:
+.abominable-registry-backup.json
+dxwrapper-abomb.log
