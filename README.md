@@ -100,7 +100,9 @@ the test system) and a 60 FPS wrapper cap. Both passes advanced at approximately
 15.9–16.0 internal ticks per second. This supports the uncapped default for
 smoother presentation and scrolling: the core scheduled tick did not accelerate
 with render FPS. It does not prove that every isolated animation, AI, or audio
-timer is frame-rate independent, so the pack still avoids forcing a particular
+timer is frame-rate independent. In particular, the measurement does **not**
+mean characters necessarily animate at 16 FPS; character sprite frames may use
+a separate timer. The pack therefore still avoids forcing a particular
 presentation cap.
 
 Avoid Windows compatibility settings that force 640x480 resolution, and avoid
