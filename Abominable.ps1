@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet('PlayBordered', 'PlayBorderless', 'SetupRegistry', 'RestoreRegistry')]
+    [ValidateSet('PlayBordered', 'PlayBorderless', 'PlayWidescreen', 'SetupRegistry', 'RestoreRegistry')]
     [string]$Action,
     [switch]$Elevated
 )
@@ -192,6 +192,15 @@ function Start-GameWithProfile {
             throw "Required wrapper file not found: $required"
         }
     }
+    $customDllMatch = Get-Content -LiteralPath $profile |
+        Where-Object { $_ -match '^\s*LoadCustomDllPath\s*=\s*(\S+)\s*$' } |
+        Select-Object -First 1
+    if ($customDllMatch -and $customDllMatch -match '^\s*LoadCustomDllPath\s*=\s*(\S+)\s*$') {
+        $customDll = $Matches[1]
+        if (-not (Test-Path -LiteralPath (Join-Path $GameDirectory $customDll) -PathType Leaf)) {
+            throw "Required custom renderer not found: $customDll"
+        }
+    }
     Copy-Item -LiteralPath $profile -Destination (Join-Path $GameDirectory 'dxwrapper.ini') -Force
     Start-Process -FilePath $GameExecutable -WorkingDirectory $GameDirectory
 }
@@ -200,6 +209,7 @@ try {
     switch ($Action) {
         'PlayBordered' { Start-GameWithProfile -ProfileName 'Bordered.ini' }
         'PlayBorderless' { Start-GameWithProfile -ProfileName 'Borderless-4x3.ini' }
+        'PlayWidescreen' { Start-GameWithProfile -ProfileName 'Widescreen-854x480.ini' }
         'SetupRegistry' {
             if (-not (Test-Administrator)) {
                 if ($Elevated) { throw 'Administrator permission was not granted.' }

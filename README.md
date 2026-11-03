@@ -11,12 +11,14 @@ game installation, beside `abomb.exe`.
 
 - A reliable bordered window using the game's original 4:3 rendering.
 - Aspect-preserving, desktop-sized borderless output with black bars as needed.
+- Optional native 16:9 mission rendering at 854x480.
 - No permanent desktop-resolution change in either supported mode.
 - Reversible 32-bit registry setup for installations whose original registry
   entry is missing or points to the wrong folder.
 
-This is presentation scaling, not native widescreen. The game still renders its
-original 640x480 and 800x600 modes. Abominable deliberately does not impose an
+The two compatibility modes use presentation scaling. The optional native
+widescreen mode expands mission rendering to 854x480; menus remain at their
+original resolution. Abominable deliberately does not impose an
 FPS cap: testing confirmed that DxWrapper can cap presentation, but did not
 establish that a cap is safe for the game's simulation timing.
 
@@ -34,6 +36,8 @@ establish that a cap is safe for the game's simulation timing.
 
    - `Play - Bordered.cmd` -- normal desktop window frame.
    - `Play - Borderless 4x3.cmd` -- fills the desktop while preserving 4:3.
+   - `Play - Native Widescreen 854x480.cmd` -- expands mission rendering to
+     16:9 in a bordered window.
 
 The last selected mode is stored in `dxwrapper.ini`. Starting `abomb.exe`
 directly afterward uses that mode too.
@@ -77,6 +81,18 @@ content. Abominable never patches the executable.
 | --- | --- | --- | --- |
 | Bordered | Game-sized window with frame | Unchanged | Original 4:3 |
 | Borderless 4:3 | Scaled to desktop, centered | Unchanged | Preserved; bars on widescreen displays |
+| Native widescreen | 854x480 mission window | Unchanged | Native 16:9 |
+
+Native widescreen is a release candidate. Terrain and background rendering
+were validated in gameplay, including the corrected expanded row pitch. The
+renderer centers the loading artwork and animated bar, expands map-edge
+warnings to the complete viewport, preserves the established HUD anchors,
+places quick-action popups beside characters in the added play area, and
+centers the pause interface, interaction regions, hover overlays, and briefing
+content. The packaged production build completed startup, menu restoration,
+854x480 mission entry, sustained gameplay, interface interaction checks, and a
+clean exit. Movies, music, input, and gameplay paths are left unchanged by the
+renderer hook.
 
 Avoid Windows compatibility settings that force 640x480 resolution, and avoid
 combining this pack with another local `ddraw.dll` wrapper. Multi-monitor,
@@ -110,8 +126,8 @@ DxWrapper's diagnostic FPS counter; the windowing and scaling settings are
 unchanged.
 
 Windows 10 is a compatibility target of this pack, but has not yet received the
-same hands-on validation. Native widescreen, higher internal resolution, and
-FPS-cap recommendations are explicitly outside this release's scope.
+same hands-on validation. Higher internal resolutions and high-frame-rate
+simulation remain outside this release candidate's scope.
 
 Run `Validate package.cmd` after extraction to check the wrapper binaries,
 profiles, required files, and accidental inclusion of known game files.
