@@ -94,6 +94,15 @@ content. The packaged production build completed startup, menu restoration,
 clean exit. Movies, music, input, and gameplay paths are left unchanged by the
 renderer hook.
 
+An additional controlled live-mission timing check sampled the engine's
+internal game-state counter under both uncapped presentation (about 100 FPS on
+the test system) and a 60 FPS wrapper cap. Both passes advanced at approximately
+15.9–16.0 internal ticks per second. This supports the uncapped default for
+smoother presentation and scrolling: the core scheduled tick did not accelerate
+with render FPS. It does not prove that every isolated animation, AI, or audio
+timer is frame-rate independent, so the pack still avoids forcing a particular
+presentation cap.
+
 Avoid Windows compatibility settings that force 640x480 resolution, and avoid
 combining this pack with another local `ddraw.dll` wrapper. Multi-monitor,
 unusual DPI, HDR, and non-NVIDIA systems have not yet been validated as broadly
@@ -126,8 +135,9 @@ DxWrapper's diagnostic FPS counter; the windowing and scaling settings are
 unchanged.
 
 Windows 10 is a compatibility target of this pack, but has not yet received the
-same hands-on validation. Higher internal resolutions and high-frame-rate
-simulation remain outside this release candidate's scope.
+same hands-on validation. Higher internal resolutions and exhaustive timing
+validation of every gameplay subsystem remain outside this release candidate's
+scope.
 
 Run `Validate package.cmd` after extraction to check the wrapper binaries,
 profiles, required files, and accidental inclusion of known game files.
