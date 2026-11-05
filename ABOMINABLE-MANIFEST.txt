@@ -6,6 +6,7 @@ LICENSE-dxwrapper.txt
 Play - Bordered.cmd
 Play - Borderless 4x3.cmd
 Play - Native Widescreen 854x480.cmd
+Play - High Resolution Widescreen.cmd
 1 - Set up registry.cmd
 Restore registry.cmd
 Validate package.cmd
@@ -17,7 +18,12 @@ dxwrapper.ini
 Profiles\Bordered.ini
 Profiles\Borderless-4x3.ini
 Profiles\Widescreen-854x480.ini
+Profiles\Widescreen-Desktop.ini
 abom_widescreen_854.dll
+abom_renderer_2560x1440.dll
+patches\abom-renderer.c
+patches\README.md
+patches\dxwrapper-mode-aware-native-resolution.patch
 
 Runtime files that may also be removed after closing the game:
 .abominable-registry-backup.json

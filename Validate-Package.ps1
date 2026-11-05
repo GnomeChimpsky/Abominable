@@ -12,8 +12,12 @@ $required = @(
     'Abominable.ps1', 'ABOMINABLE-MANIFEST.txt', 'README.md',
     'ddraw.dll', 'dxwrapper.dll', 'dxwrapper.ini',
     'Profiles\Bordered.ini', 'Profiles\Borderless-4x3.ini',
-    'Profiles\Widescreen-854x480.ini', 'abom_widescreen_854.dll',
-    'Play - Native Widescreen 854x480.cmd'
+    'Profiles\Widescreen-854x480.ini', 'Profiles\Widescreen-Desktop.ini',
+    'abom_widescreen_854.dll', 'Play - Native Widescreen 854x480.cmd',
+    'abom_renderer_2560x1440.dll',
+    'Play - High Resolution Widescreen.cmd',
+    'patches\abom-renderer.c', 'patches\README.md',
+    'patches\dxwrapper-mode-aware-native-resolution.patch'
 )
 foreach ($relative in $required) {
     if (-not (Test-Path -LiteralPath (Join-Path $Root $relative) -PathType Leaf)) {
@@ -23,8 +27,9 @@ foreach ($relative in $required) {
 
 $expectedHashes = @{
     'ddraw.dll' = 'B8B878E29C2931D6A8D064665C4C93EDB28A0105152E7247F8F543C1603985C3'
-    'dxwrapper.dll' = '23A2889E0785A02F17F1EE764254BF22B937FC5BDC6ED6374201A9F50CC7B43D'
+    'dxwrapper.dll' = '18491B4196717F59ADCA9A91AA329A5A9FED76B6A877105C37BC0325008D412D'
     'abom_widescreen_854.dll' = '89F16CA3F84B591B6128BEB687A654C1A748951DFC07FBE06F01B03E9A5D1839'
+    'abom_renderer_2560x1440.dll' = '884ACF9C822B4ECC3BF4E406319CF465DFAA0E584FE863DDA5611F593D6EFA6E'
 }
 foreach ($relative in $expectedHashes.Keys) {
     $path = Join-Path $Root $relative
@@ -53,6 +58,13 @@ $profileExpectations = @{
         LoadCustomDllPath = 'abom_widescreen_854.dll'
         Dd7to9 = '1'; DdrawUseNativeResolution = '0'; DdrawMaintainAspectRatio = '0'
         EnableWindowMode = '1'; WindowModeBorder = '1'; FullscreenWindowMode = '0'
+        FullScreen = '0'; LimitPerFrameFPS = '0'; ShowFPSCounter = '0'
+        Dinputto8 = '0'; EnableDsoundWrapper = '0'
+    }
+    'Profiles\Widescreen-Desktop.ini' = @{
+        LoadCustomDllPath = 'abom_renderer_2560x1440.dll'
+        Dd7to9 = '1'; DdrawUseNativeResolution = '1'; DdrawMaintainAspectRatio = '1'
+        EnableWindowMode = '1'; WindowModeBorder = '0'; FullscreenWindowMode = '0'
         FullScreen = '0'; LimitPerFrameFPS = '0'; ShowFPSCounter = '0'
         Dinputto8 = '0'; EnableDsoundWrapper = '0'
     }

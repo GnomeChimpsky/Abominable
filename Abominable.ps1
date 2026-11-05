@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet('PlayBordered', 'PlayBorderless', 'PlayWidescreen', 'SetupRegistry', 'RestoreRegistry')]
+    [ValidateSet('PlayBordered', 'PlayBorderless', 'PlayWidescreen', 'PlayWidescreenDesktop', 'SetupRegistry', 'RestoreRegistry')]
     [string]$Action,
     [switch]$Elevated
 )
@@ -210,6 +210,7 @@ try {
         'PlayBordered' { Start-GameWithProfile -ProfileName 'Bordered.ini' }
         'PlayBorderless' { Start-GameWithProfile -ProfileName 'Borderless-4x3.ini' }
         'PlayWidescreen' { Start-GameWithProfile -ProfileName 'Widescreen-854x480.ini' }
+        'PlayWidescreenDesktop' { Start-GameWithProfile -ProfileName 'Widescreen-Desktop.ini' }
         'SetupRegistry' {
             if (-not (Test-Administrator)) {
                 if ($Elevated) { throw 'Administrator permission was not granted.' }

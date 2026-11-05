@@ -12,23 +12,28 @@ game installation, beside `abomb.exe`.
 - A reliable bordered window using the game's original 4:3 rendering.
 - Aspect-preserving, desktop-sized borderless output with black bars as needed.
 - Optional native 16:9 mission rendering at 854x480.
-- No permanent desktop-resolution change in either supported mode.
+- Optional native 2560x1440 widescreen mission rendering with mode-aware 4:3
+  preservation for menus and movies and desktop-sized presentation.
+- Model-only 2x supersampling for sharper polygonal characters while retaining
+  the original gameplay, selection, and animation cadence.
+- No permanent desktop-resolution change in any supported mode.
 - Reversible 32-bit registry setup for installations whose original registry
   entry is missing or points to the wrong folder.
 
-The two compatibility modes use presentation scaling. The optional native
-widescreen mode expands mission rendering to 854x480; menus remain at their
-original resolution. Abominable deliberately does not impose an
-FPS cap: testing confirmed that DxWrapper can cap presentation, but did not
-establish that a cap is safe for the game's simulation timing.
+The compatibility modes use presentation scaling. Native widescreen expands
+mission rendering to 854x480, while high-resolution widescreen renders missions
+at 2560x1440 and scales that image to the desktop; menus and movies retain their
+original 4:3 composition. Abominable deliberately does not impose an FPS cap:
+testing confirmed that DxWrapper can cap presentation, but did not establish
+that a cap is safe for every gameplay subsystem.
 
 ## Install and play
 
 1. Download the release ZIP and extract **its contents** into the game folder.
    `Abominable.ps1`, `ddraw.dll`, `dxwrapper.dll`, and `abomb.exe` must end up in
    the same folder.
-2. If the game was installed normally and already starts, use either play
-   shortcut immediately.
+2. If the game was installed normally and already starts, use any play shortcut
+   immediately.
 3. If the game opens only the System Analyzer, fails to start, or was copied
    from another PC, run `1 - Set up registry.cmd`. Approve the administrator
    prompt, then run the game's `ReBenchmark.exe` once and accept its prompt.
@@ -38,6 +43,9 @@ establish that a cap is safe for the game's simulation timing.
    - `Play - Borderless 4x3.cmd` -- fills the desktop while preserving 4:3.
    - `Play - Native Widescreen 854x480.cmd` -- expands mission rendering to
      16:9 in a bordered window.
+   - `Play - High Resolution Widescreen.cmd` -- renders missions natively at
+     2560x1440 and presents them borderlessly at the desktop resolution while
+     keeping menus and movies centered at 4:3.
 
 The last selected mode is stored in `dxwrapper.ini`. Starting `abomb.exe`
 directly afterward uses that mode too.
@@ -82,6 +90,16 @@ content. Abominable never patches the executable.
 | Bordered | Game-sized window with frame | Unchanged | Original 4:3 |
 | Borderless 4:3 | Scaled to desktop, centered | Unchanged | Preserved; bars on widescreen displays |
 | Native widescreen | 854x480 mission window | Unchanged | Native 16:9 |
+| High-resolution widescreen | Native 2560x1440 mission, borderless desktop output | Unchanged | Mode-aware: 4:3 menus/movies, 16:9 missions |
+
+High-resolution widescreen renders the mission terrain and widened playfield at
+2560x1440, then uses the monitor's current desktop resolution for presentation.
+It has been interactively validated on a 2560x1440 desktop. A 1080p desktop
+will downscale that image and a 4K desktop will upscale it; native 1080p and 4K
+logical render targets remain investigation goals rather than claims of this
+release candidate. Existing 2D artwork retains its source detail. Polygonal
+characters use an isolated 1280x960 model target and 2x downsampling, producing
+visibly sharper edges without changing their world coordinates or hit tests.
 
 Native widescreen is a release candidate. Terrain and background rendering
 were validated in gameplay, including the corrected expanded row pitch. The
@@ -89,10 +107,13 @@ renderer centers the loading artwork and animated bar, expands map-edge
 warnings to the complete viewport, preserves the established HUD anchors,
 places quick-action popups beside characters in the added play area, and
 centers the pause interface, interaction regions, hover overlays, and briefing
-content. The packaged production build completed startup, menu restoration,
-854x480 mission entry, sustained gameplay, interface interaction checks, and a
-clean exit. Movies, music, input, and gameplay paths are left unchanged by the
-renderer hook.
+content. The high-resolution path additionally scales the complete scanner
+overlay from an isolated clean snapshot, restores matching mouse coordinates,
+and preserves the widened mode across a second mission in the same process.
+The validated build completed startup, menu/movie restoration, native mission
+entry, sustained gameplay, UI interaction checks, scanner transitions, and a
+clean exit. Movies, music, input, and simulation paths are left unchanged by
+the renderer hook.
 
 An additional controlled live-mission timing check sampled the engine's
 internal game-state counter under both uncapped presentation (about 100 FPS on
@@ -135,20 +156,27 @@ borderless profile produced desktop-sized output with a centered 4:3 image.
 Normal non-debugged playback remained responsive and the DxWrapper log showed
 expected device resets without errors.
 
-The release profiles differ from the recorded test profiles only by hiding
-DxWrapper's diagnostic FPS counter; the windowing and scaling settings are
-unchanged.
+The high-resolution profile uses a signature-checked game renderer hook plus a
+narrowly modified DxWrapper build. The renderer source and reproducible build
+command are in `patches\abom-renderer.c` and `patches\README.md`. Upstream
+DxWrapper cached the first 800x600 presentation vertices and later reused their
+4:3 geometry for the widescreen mission surface. The included source patch makes
+the vertices follow the active primary texture and permits arbitrary logical
+surface sizes when native-resolution presentation is enabled. The exact patch,
+based on upstream commit `785a68cda7dc2ddfb8e16ff821fe59003ff34c91`, is in
+`patches\dxwrapper-mode-aware-native-resolution.patch`.
 
 Windows 10 is a compatibility target of this pack, but has not yet received the
-same hands-on validation. Higher internal resolutions and exhaustive timing
-validation of every gameplay subsystem remain outside this release candidate's
-scope.
+same hands-on validation. Native 1920x1080 and 3840x2160 logical rendering and
+exhaustive timing validation of every gameplay subsystem remain outside this
+release candidate's claims.
 
 Run `Validate package.cmd` after extraction to check the wrapper binaries,
 profiles, required files, and accidental inclusion of known game files.
 
 ## Credits and license
 
-DxWrapper is by Elisha Riedlinger and contributors. Its unmodified binary
-distribution license is included as `LICENSE-dxwrapper.txt`. Abominable's
+DxWrapper is by Elisha Riedlinger and contributors. Its distribution license
+is included as `LICENSE-dxwrapper.txt`; Abominable's small altered-source patch
+is included and plainly marked. Abominable's
 scripts and documentation are provided under the MIT License; see `LICENSE`.

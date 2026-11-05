@@ -1,0 +1,61 @@
+From: Abominable project
+Upstream: https://github.com/elishacloud/dxwrapper
+Base commit: 785a68cda7dc2ddfb8e16ff821fe59003ff34c91
+Purpose: Recalculate presentation geometry when the logical primary texture
+changes size, and accept arbitrary logical surface dimensions when presenting
+at the desktop's native resolution.
+
+This is an altered source version and is not an unmodified upstream DxWrapper
+source file. DxWrapper remains copyright Elisha Riedlinger and contributors;
+see LICENSE-dxwrapper.txt.
+
+diff --git a/ddraw/IDirectDrawX.cpp b/ddraw/IDirectDrawX.cpp
+index b852fd4..b69e4f8 100644
+--- a/ddraw/IDirectDrawX.cpp
++++ b/ddraw/IDirectDrawX.cpp
+@@ -154,6 +154,8 @@ namespace {
+ 	bool EnableWaitVsync = false;
+ 	bool UsingShader32f = false;
+ 	bool IsDeviceVerticesSet = false;
++	DWORD DeviceVerticesWidth = 0;
++	DWORD DeviceVerticesHeight = 0;
+ 	TLVERTEX DeviceVertices[4];
+ 	DWORD BehaviorFlags = 0;
+ 	HWND hFocusWindow = nullptr;
+@@ -3549,6 +3551,17 @@ HRESULT m_IDirectDrawX::CheckFixResolution(DWORD& dwWidth, DWORD& dwHeight, DWOR
+ 		}
+ 	}
+ 
++	// Native-resolution presentation does not switch the monitor to the
++	// game's logical mode.  Accept arbitrary logical surface dimensions here;
++	// requiring an enumerated physical display mode rejects Abomination's
++	// validated 854x480 mission surface before it can be scaled to the desktop.
++	if (Config.DdrawUseNativeResolution)
++	{
++		FoundWidth = dwWidth;
++		FoundHeight = dwHeight;
++		return DD_OK;
++	}
++
+ 	// Enumerate modes for format XRGB
+ 	UINT modeCount = d3d9Object->GetAdapterModeCount(d3d9AdapterIndex, D9DisplayFormat);
+ 
+@@ -4411,6 +4424,8 @@ void m_IDirectDrawX::UpdateVertices(DWORD Width, DWORD Height)
+ 	DeviceVertices[3].u = u0tex;
+ 	DeviceVertices[3].v = v1tex;
+ 
++	DeviceVerticesWidth = Width;
++	DeviceVerticesHeight = Height;
+ 	IsDeviceVerticesSet = true;
+ }
+ 
+@@ -5563,7 +5578,8 @@ HRESULT m_IDirectDrawX::DrawPrimarySurface(m_IDirectDrawSurfaceX* pPrimarySurfac
+ 	}
+ 
+ 	// Update vertices
+-	if (!IsDeviceVerticesSet)
++	if (!IsDeviceVerticesSet || DeviceVerticesWidth != Desc.Width ||
++		DeviceVerticesHeight != Desc.Height)
+ 	{
+ 		UpdateVertices(Desc.Width, Desc.Height);
+ 	}

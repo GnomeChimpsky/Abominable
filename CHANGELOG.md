@@ -1,5 +1,27 @@
 # Changelog
 
+## 1.2.0-rc1 - 2026-11-05
+
+- Add an opt-in 2560x1440 native widescreen mission renderer, presented at the
+  current desktop resolution.
+- Use a documented DxWrapper source patch that recalculates aspect geometry
+  when the game switches between 4:3 menus/movies and widescreen missions.
+- Preserve arbitrary logical mission modes under native-resolution scaling;
+  this prevents native mission startup from being rejected as an unavailable
+  physical monitor mode.
+- Render terrain and the widened playfield at 2560x1440 while preserving the
+  original menu and movie aspect ratio.
+- Add model-only 2x supersampling for sharper polygonal characters without
+  changing selection, input, simulation, or animation timing.
+- Correct high-resolution loading, HUD, quick-action, pause, briefing,
+  map-edge, and scanner placement and interaction.
+- Keep the scanner fullscreen and stable by pairing every expanded frame with
+  restoration of an isolated 640x480 source snapshot.
+- Preserve native widescreen state when loading a second mission in the same
+  process.
+- Publish the renderer source, reproducible build command, binary hashes, and
+  the exact DxWrapper source patch used by the package.
+
 ## 1.1.0-rc3 - 2026-11-02
 
 - Centered the animated loading bar with the widescreen loading artwork.
